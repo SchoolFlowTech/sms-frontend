@@ -27,65 +27,56 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
 
-    try {
-      const endpoint = process.env.NEXT_PUBLIC_GRAPHQL_URL;
-      if (!endpoint) {
-        throw new Error("GraphQL URL is not configured");
-      }
+ async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  e.preventDefault();
+  setError(null);
+  setLoading(true);
 
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          query: LOGIN_MUTATION,
-          variables: { email, password },
-        }),
-      });
-
-      const json = await res.json();
-
-      if (!res.ok || json.errors) {
-        const message =
-          json?.errors?.[0]?.message || "Login failed. Please try again.";
-        throw new Error(message);
-      }
-
-      const token = json.data?.login?.token;
-      const user = json.data?.login?.user;
-
-      if (!token) {
-        throw new Error("No token returned from server");
-      }
-
-      // 🔐 store token in localStorage (and user if you want)
-      localStorage.setItem("token", token);
-      if (user) {
-        localStorage.setItem("user", JSON.stringify(user));
-        toast.success("User Logged In successfully! 🎉");
-      }
-
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 0);
-    } catch (err: any) {
-      setError(err?.message || "Something went wrong");
-    } finally {
-      setLoading(false);
+  try {
+    const endpoint = process.env.NEXT_PUBLIC_GRAPHQL_URL;
+    if (!endpoint) {
+      throw new Error("GraphQL URL is not configured");
     }
+
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // ✅ REQUIRED
+      body: JSON.stringify({
+        query: LOGIN_MUTATION,
+        variables: { email, password },
+      }),
+    });
+
+    const json = await res.json();
+
+    if (!res.ok || json.errors) {
+      throw new Error(
+        json?.errors?.[0]?.message || "Login failed. Please try again."
+      );
+    }
+
+    // ❌ DO NOT read or set cookies here
+    toast.success("User Logged In successfully! 🎉");
+
+    // ✅ Just redirect
+    router.replace("/dashboard");
+
+  } catch (err: any) {
+    setError(err?.message || "Something went wrong");
+  } finally {
+    setLoading(false);
   }
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      router.replace("/dashboard");
-    }
-  }, [router]);
+}
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     router.replace("/dashboard");
+  //   }
+  // }, [router]);
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
       <h2 className="text-3xl font-extrabold text-gray-900 text-center">

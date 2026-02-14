@@ -5,53 +5,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { ArrowLeft, Save } from "lucide-react";
 import { useFormik } from "formik";
-
-const CREATE_STUDENT_MUTATION = `
-  mutation CreateStudent(
-    $firstName: String!
-    $lastName: String!
-    $gender: String!
-    $dateOfBirth: String!
-    $mobileNumber: String!
-    $address: String!
-    $class: String!
-    $section: String!
-    $rollNumber: String!
-    $admissionDate: String!
-    $status: String!
-  ) {
-    createStudent(
-      firstName: $firstName
-      lastName: $lastName
-      gender: $gender
-      dateOfBirth: $dateOfBirth
-      mobileNumber: $mobileNumber
-      address: $address
-      class: $class
-      section: $section
-      rollNumber: $rollNumber
-      admissionDate: $admissionDate
-      status: $status
-    ) {
-      status
-      message
-      data {
-        studentId
-        firstName
-        lastName
-        gender
-        dateOfBirth
-        mobileNumber
-        address
-        class
-        section
-        rollNumber
-        admissionDate
-        status
-      }
-    }
-  }
-`;
+import { CREATE_STUDENT_MUTATION } from "../../../gql/Students/students";
 
 type StudentFormState = {
   firstName: string;

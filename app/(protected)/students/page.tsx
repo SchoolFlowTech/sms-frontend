@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Search, Filter, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-
+import axiosClient from "../../lib/axiosClient.js";
 const STUDENTS_QUERY = `
   query Students {
     students {
@@ -53,43 +53,31 @@ export default function StudentsPage() {
 
   const pageSize = 10;
 
-  async function fetchStudents() {
-    try {
-      setLoading(true);
+ async function fetchStudents() {
+  try {
+    setLoading(true);
 
-      const endpoint = process.env.NEXT_PUBLIC_GRAPHQL_URL;
-      if (!endpoint) throw new Error("Backend URL missing!");
+    const res = await axiosClient.post("/", {
+      query: STUDENTS_QUERY,
+    });
 
-      const token =
-        typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          query: STUDENTS_QUERY,
-        }),
-      });
-
-      const json = await res.json();
-      console.log("students json", json);
-
-      if (!res.ok || json.errors) {
-        throw new Error(json.errors?.[0]?.message || "Failed to fetch students");
-      }
-
-      const list: Student[] = json.data?.students?.data ?? [];
-      setStudents(list);
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err?.message || "Failed to load students");
-    } finally {
-      setLoading(false);
+    // GraphQL errors (200 OK but failed)
+    if (res.data.errors) {
+      throw new Error(
+        res.data.errors[0]?.message || "Failed to fetch students"
+      );
     }
+
+    const list: Student[] = res.data?.data?.students?.data ?? [];
+    setStudents(list);
+  } catch (err: any) {
+    console.error(err);
+    toast.error(err?.message || "Failed to load students");
+  } finally {
+    setLoading(false);
   }
+}
+
 
   useEffect(() => {
     fetchStudents();

@@ -1,6 +1,5 @@
 // app/(protected)/layout.tsx
 "use client";
-
 import type { ReactNode } from "react";
 import {
   LayoutDashboard,
@@ -22,6 +21,7 @@ import { useEffect, useState } from "react";
 // We need the pathname here to correctly set the active state
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+  { name: "Teachers", icon: LayoutDashboard, path: "/teachers" },
   { name: "Students", icon: User, path: "/students" },
   { name: "Courses", icon: BookOpen, path: "/courses" },
   { name: "Messages", icon: Mail, path: "/messages", badge: "3" },
@@ -65,34 +65,49 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   // Fix 2: State to hold the user's name
   const [userName, setUserName] = useState<string>("");
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   const user = localStorage.getItem("user");
 
-    if (!token) {
-      // Redirects unauthenticated users to login
-      router.replace("/login");
-    } else {
-      if (user) {
-        const parsed = JSON.parse(user);
-        // Set the user name from localStorage
-        console.log("user is here",user)
-        setUserName(parsed?.name || "Admin");
-      }
-      setLoading(false);
-    }
-  }, [router]);
+  //   if (!token) {
+  //     // Redirects unauthenticated users to login
+  //     router.replace("/login");
+  //   } else {
+  //     if (user) {
+  //       const parsed = JSON.parse(user);
+  //       // Set the user name from localStorage
+  //       console.log("user is here",user)
+  //       setUserName(parsed?.name || "Admin");
+  //     }
+  //     setLoading(false);
+  //   }
+  // }, [router]);
 
-  if (loading) {
-    // Show nothing while checking auth to prevent flashing content
-    return null;
-  }
+  // if (loading) {
+  //   // Show nothing while checking auth to prevent flashing content
+  //   return null;
+  // }
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+const handleLogout = async () => {
+  try {
+    await fetch(process.env.NEXT_PUBLIC_GRAPHQL_URL!, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // 🔥 REQUIRED so backend can clear cookie
+      body: JSON.stringify({
+        query: `mutation { logout }`,
+      }),
+    });
+  } catch (e) {
+    console.error("Logout failed", e);
+  } finally {
+    // just redirect — cookie is already cleared by backend
     router.replace("/login");
-  };
+  }
+};
+
 
   return (
     <div className="flex min-h-screen font-sans bg-[var(--color-background-page)]">
