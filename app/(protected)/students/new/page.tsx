@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { ArrowLeft, Save } from "lucide-react";
 import { useFormik } from "formik";
 import { CREATE_STUDENT_MUTATION } from "../../../gql/Students/students";
+import axiosClient from "@/app/lib/axiosClient";
 
 type StudentFormState = {
   firstName: string;
@@ -14,7 +15,7 @@ type StudentFormState = {
   dateOfBirth: string;
   mobileNumber: string;
   address: string;
-  class: string;
+  className: string;
   section: string;
   rollNumber: string;
   admissionDate: string;
@@ -28,7 +29,7 @@ const INITIAL_VALUES: StudentFormState = {
   dateOfBirth: "",
   mobileNumber: "",
   address: "",
-  class: "",
+  className: "",
   section: "",
   rollNumber: "",
   admissionDate: "",
@@ -49,12 +50,15 @@ export default function NewStudentPage() {
       if (!values.lastName.trim()) errors.lastName = "Last name is required";
       if (!values.gender) errors.gender = "Gender is required";
       if (!values.dateOfBirth) errors.dateOfBirth = "DOB is required";
-      if (!values.mobileNumber.trim()) errors.mobileNumber = "Mobile is required";
+      if (!values.mobileNumber.trim())
+        errors.mobileNumber = "Mobile is required";
       if (!values.address.trim()) errors.address = "Address is required";
-      if (!values.class.trim()) errors.class = "Class is required";
+      if (!values.className.trim()) errors.className = "Class is required";
       if (!values.section.trim()) errors.section = "Section is required";
-      if (!values.rollNumber.trim()) errors.rollNumber = "Roll number is required";
-      if (!values.admissionDate) errors.admissionDate = "Admission date is required";
+      if (!values.rollNumber.trim())
+        errors.rollNumber = "Roll number is required";
+      if (!values.admissionDate)
+        errors.admissionDate = "Admission date is required";
       if (!values.status) errors.status = "Status is required";
 
       return errors;
@@ -62,36 +66,30 @@ export default function NewStudentPage() {
     onSubmit: async (values) => {
       try {
         if (!endpoint) throw new Error("Backend URL missing!");
-
         setSaving(true);
 
-        const token =
-          typeof window !== "undefined"
-            ? localStorage.getItem("token")
-            : null;
-
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify({
-            query: CREATE_STUDENT_MUTATION,
-            variables: values,
-          }),
+        const response = await axiosClient.post("", {
+          query: CREATE_STUDENT_MUTATION,
+          variables: values,
         });
 
-        const json = await res.json();
+        const json = response.data;
         console.log("create student json", json);
 
-        if (!res.ok || json.errors) {
+        // 🔥 Handle GraphQL errors
+        if (json.errors) {
           throw new Error(
-            json.errors?.[0]?.message || "Failed to create student"
+            json.errors?.[0]?.message || "Failed to create student",
           );
         }
 
-        toast.success("Student created successfully 🎉");
+        const result = json.data?.createStudent;
+
+        if (!result || result.status !== "success") {
+          throw new Error(result?.message || "Failed to create student");
+        }
+
+        toast.success(result.message || "Student created successfully 🎉");
         router.push("/students");
       } catch (err: any) {
         console.error(err);
@@ -102,15 +100,8 @@ export default function NewStudentPage() {
     },
   });
 
-  const {
-    values,
-    handleChange,
-    handleBlur,
-    handleSubmit,
-    touched,
-    errors,
-  } = formik;
-
+  const { values, handleChange, handleBlur, handleSubmit, touched, errors } =
+    formik;
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       {/* Header */}
@@ -123,9 +114,7 @@ export default function NewStudentPage() {
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Add New Student
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900">Add New Student</h1>
         </div>
       </div>
 
@@ -223,9 +212,7 @@ export default function NewStudentPage() {
               className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             {touched.mobileNumber && errors.mobileNumber && (
-              <p className="mt-1 text-xs text-red-500">
-                {errors.mobileNumber}
-              </p>
+              <p className="mt-1 text-xs text-red-500">{errors.mobileNumber}</p>
             )}
           </div>
 
@@ -274,15 +261,15 @@ export default function NewStudentPage() {
               Class
             </label>
             <input
-              name="class"
-              value={values.class}
+              name="className"
+              value={values.className}
               onChange={handleChange}
               onBlur={handleBlur}
               className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="e.g. 1st year"
             />
-            {touched.class && errors.class && (
-              <p className="mt-1 text-xs text-red-500">{errors.class}</p>
+            {touched.className && errors.className && (
+              <p className="mt-1 text-xs text-red-500">{errors.className}</p>
             )}
           </div>
 

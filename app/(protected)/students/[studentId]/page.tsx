@@ -20,7 +20,7 @@ const GET_STUDENT_QUERY = `
         dateOfBirth
         mobileNumber
         address
-        class
+        className
         section
         rollNumber
         admissionDate
@@ -39,7 +39,7 @@ const UPDATE_STUDENT_MUTATION = `
     $dateOfBirth: String!
     $mobileNumber: String!
     $address: String!
-    $class: String!
+    $className: String!
     $section: String!
     $rollNumber: String!
     $admissionDate: String!
@@ -53,7 +53,7 @@ const UPDATE_STUDENT_MUTATION = `
       dateOfBirth: $dateOfBirth
       mobileNumber: $mobileNumber
       address: $address
-      class: $class
+      className: $className
       section: $section
       rollNumber: $rollNumber
       admissionDate: $admissionDate
@@ -69,7 +69,7 @@ const UPDATE_STUDENT_MUTATION = `
         dateOfBirth
         mobileNumber
         address
-        class
+        className
         section
         rollNumber
         admissionDate
@@ -86,7 +86,7 @@ type StudentFormState = {
   dateOfBirth: string;
   mobileNumber: string;
   address: string;
-  class: string;
+  className: string;
   section: string;
   rollNumber: string;
   admissionDate: string;
@@ -100,7 +100,7 @@ const EMPTY_VALUES: StudentFormState = {
   dateOfBirth: "",
   mobileNumber: "",
   address: "",
-  class: "",
+  className: "",
   section: "",
   rollNumber: "",
   admissionDate: "",
@@ -121,56 +121,63 @@ export default function EditStudentPage() {
 
   // Fetch the student details on mount
 
-useEffect(() => {
-  async function fetchStudent() {
-    try {
-      setLoading(true);
+  useEffect(() => {
+    async function fetchStudent() {
+      try {
+        setLoading(true);
 
-      if (!studentIdParam) throw new Error("No studentId in route");
+        if (!studentIdParam) throw new Error("No studentId in route");
 
-      const res = await axiosClient.post("", {
-        query: GET_STUDENT_QUERY,
-        variables: {
-          studentId: Number(studentIdParam),
-        },
-      });
+        const res = await axiosClient.post("", {
+          query: GET_STUDENT_QUERY,
+          variables: {
+            studentId: Number(studentIdParam),
+          },
+        });
 
-      // GraphQL errors (200 OK but failed)
-      if (res.data.errors) {
-        throw new Error(
-          res.data.errors[0]?.message || "Failed to fetch student"
-        );
+        // GraphQL errors (200 OK but failed)
+        if (res.data.errors) {
+          throw new Error(
+            res.data.errors[0]?.message || "Failed to fetch student",
+          );
+        }
+
+        const student = res.data?.data?.student?.data;
+        if (!student) {
+          throw new Error("Student not found");
+        }
+
+        setInitialValues({
+          firstName: student.firstName ?? "",
+          lastName: student.lastName ?? "",
+          gender: student.gender ?? "",
+          mobileNumber: student.mobileNumber ?? "",
+          address: student.address ?? "",
+          className: student.className ?? "",
+          section: student.section ?? "",
+          rollNumber: student.rollNumber ?? "",
+          dateOfBirth: student.dateOfBirth
+            ? new Date(Number(student.dateOfBirth)).toISOString().split("T")[0]
+            : "",
+
+          admissionDate: student.admissionDate
+            ? new Date(Number(student.admissionDate))
+                .toISOString()
+                .split("T")[0]
+            : "",
+
+          status: student.status ?? "Active",
+        });
+      } catch (err: any) {
+        console.error(err);
+        toast.error(err?.message || "Failed to load student");
+      } finally {
+        setLoading(false);
       }
-
-      const student = res.data?.data?.student?.data;
-      if (!student) {
-        throw new Error("Student not found");
-      }
-
-      setInitialValues({
-        firstName: student.firstName ?? "",
-        lastName: student.lastName ?? "",
-        gender: student.gender ?? "",
-        dateOfBirth: student.dateOfBirth ?? "",
-        mobileNumber: student.mobileNumber ?? "",
-        address: student.address ?? "",
-        class: student.class ?? "",
-        section: student.section ?? "",
-        rollNumber: student.rollNumber ?? "",
-        admissionDate: student.admissionDate ?? "",
-        status: student.status ?? "Active",
-      });
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err?.message || "Failed to load student");
-    } finally {
-      setLoading(false);
     }
-  }
 
-  fetchStudent();
-}, [studentIdParam]);
-
+    fetchStudent();
+  }, [studentIdParam]);
 
   // Formik setup
   const formik = useFormik<StudentFormState>({
@@ -186,7 +193,7 @@ useEffect(() => {
       if (!values.mobileNumber.trim())
         errors.mobileNumber = "Mobile is required";
       if (!values.address.trim()) errors.address = "Address is required";
-      if (!values.class.trim()) errors.class = "Class is required";
+      if (!values.className.trim()) errors.className = "Class is required";
       if (!values.section.trim()) errors.section = "Section is required";
       if (!values.rollNumber.trim())
         errors.rollNumber = "Roll number is required";
@@ -198,39 +205,35 @@ useEffect(() => {
     },
     onSubmit: async (values) => {
       try {
-        if (!endpoint) throw new Error("Backend URL missing!");
         if (!studentIdParam) throw new Error("No studentId in route");
 
         setSaving(true);
 
-        const token =
-          typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        const response = await axiosClient.post("", {
+          query: UPDATE_STUDENT_MUTATION,
+          variables: {
+            studentId: Number(studentIdParam),
+            ...values,
           },
-          body: JSON.stringify({
-            query: UPDATE_STUDENT_MUTATION,
-            variables: {
-              studentId: Number(studentIdParam),
-              ...values,
-            },
-          }),
         });
 
-        const json = await res.json();
+        const json = response.data;
         console.log("update student json", json);
 
-        if (!res.ok || json.errors) {
+        // 🔥 Handle GraphQL errors
+        if (json.errors) {
           throw new Error(
-            json.errors?.[0]?.message || "Failed to update student"
+            json.errors?.[0]?.message || "Failed to update student",
           );
         }
 
-        toast.success("Student updated successfully ✅");
+        const result = json.data?.updateStudent;
+
+        if (!result || result.status !== "success") {
+          throw new Error(result?.message || "Failed to update student");
+        }
+
+        toast.success(result.message || "Student updated successfully ✅");
         router.push("/students");
       } catch (err: any) {
         console.error(err);
@@ -418,15 +421,15 @@ useEffect(() => {
               Class
             </label>
             <input
-              name="class"
-              value={values.class}
+              name="className"
+              value={values.className}
               onChange={handleChange}
               onBlur={handleBlur}
               className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="e.g. 1st year"
             />
-            {touched.class && errors.class && (
-              <p className="mt-1 text-xs text-red-500">{errors.class}</p>
+            {touched.className && errors.className && (
+              <p className="mt-1 text-xs text-red-500">{errors.className}</p>
             )}
           </div>
 
