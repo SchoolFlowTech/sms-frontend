@@ -18,7 +18,7 @@ const STUDENTS_QUERY = `
         dateOfBirth
         mobileNumber
         address
-        class
+        className
         section
         rollNumber
         admissionDate
@@ -36,7 +36,7 @@ type Student = {
   dateOfBirth?: string;
   mobileNumber?: string;
   address?: string;
-  class?: string;
+  className?: string;
   section?: string;
   rollNumber?: string;
   admissionDate?: string;
@@ -94,7 +94,7 @@ export default function StudentsPage() {
         .trim();
       const id = String(s.studentId ?? "").toLowerCase();
       const roll = (s.rollNumber ?? "").toLowerCase();
-      const cls = (s.class ?? "").toLowerCase();
+      const cls = (s.className ?? "").toLowerCase();
       const section = (s.section ?? "").toLowerCase();
       const mobile = (s.mobileNumber ?? "").toLowerCase();
 
@@ -165,7 +165,7 @@ export default function StudentsPage() {
                 "studentId",
                 "firstName",
                 "lastName",
-                "class",
+                "className",
                 "section",
                 "rollNumber",
                 "mobileNumber",
@@ -258,8 +258,8 @@ export default function StudentsPage() {
                       </div>
                     </td>
                     <td className="py-4 px-6 text-gray-600">
-                      {student.class
-                        ? `${student.class}${
+                      {student.className
+                        ? `${student.className}${
                             student.section ? ` - Sec ${student.section}` : ""
                           }`
                         : "N/A"}

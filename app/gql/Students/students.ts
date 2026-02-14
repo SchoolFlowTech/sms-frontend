@@ -8,7 +8,7 @@ export const CREATE_STUDENT_MUTATION = `
     $dateOfBirth: String!
     $mobileNumber: String!
     $address: String!
-    $class: String!
+    $className: String!
     $section: String!
     $rollNumber: String!
     $admissionDate: String!
@@ -21,7 +21,7 @@ export const CREATE_STUDENT_MUTATION = `
       dateOfBirth: $dateOfBirth
       mobileNumber: $mobileNumber
       address: $address
-      class: $class
+      className: $className
       section: $section
       rollNumber: $rollNumber
       admissionDate: $admissionDate
@@ -37,7 +37,7 @@ export const CREATE_STUDENT_MUTATION = `
         dateOfBirth
         mobileNumber
         address
-        class
+        className
         section
         rollNumber
         admissionDate
