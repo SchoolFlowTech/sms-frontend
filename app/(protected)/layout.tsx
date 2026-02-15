@@ -115,10 +115,10 @@ const handleLogout = async () => {
       <aside className="w-72 hidden md:flex flex-col bg-white m-4 rounded-[30px] shadow-soft h-[calc(100vh-2rem)] sticky top-4 flex-shrink-0">
         <div className="p-8 pb-4 flex items-center gap-3">
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl">
-            K
+            AJ
           </div>
           <span className="text-2xl font-bold text-gray-900">
-            Kleon<span className="text-primary">.</span>
+            AJ Techno<span className="text-primary">.</span>
           </span>
         </div>
 

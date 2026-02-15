@@ -209,6 +209,8 @@ export default function NewStudentPage() {
               value={values.mobileNumber}
               onChange={handleChange}
               onBlur={handleBlur}
+              minLength={0}
+              maxLength={10}
               className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             {touched.mobileNumber && errors.mobileNumber && (

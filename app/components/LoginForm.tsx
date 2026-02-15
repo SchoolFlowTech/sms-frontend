@@ -162,7 +162,7 @@ export default function LoginForm() {
         className="w-full flex items-center justify-center py-3 bg-white text-gray-700 rounded-xl text-lg font-bold border border-gray-200 transition-all duration-300 hover:bg-gray-50"
       >
         <img
-          src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+          src="/google.png"
           alt="Google"
           className="w-5 h-5 mr-2"
         />
