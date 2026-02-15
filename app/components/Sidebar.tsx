@@ -32,9 +32,9 @@ export default function Sidebar() {
       {/* 1. Logo Area - Exact Kleon Style */}
       <div className="p-8 pb-4 flex items-center gap-3">
         <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl">
-          K
+          AJ
         </div>
-        <span className="text-2xl font-bold text-gray-900">Kleon<span className="text-primary">.</span></span>
+        <span className="text-2xl font-bold text-gray-900">AJ Techno<span className="text-primary">.</span></span>
       </div>
 
       {/* 2. Main Navigation */}

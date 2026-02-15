@@ -7,184 +7,182 @@ import { ArrowLeft, Save } from "lucide-react";
 import { useFormik } from "formik";
 import axiosClient from "../../../lib/axiosClient";
 
-const GET_STUDENT_QUERY = `
-  query GetStudent($studentId: Int!) {
-    student(studentId: $studentId) {
+const GET_TEACHER_QUERY = `
+  query GetTeacher($teacherId: Int!) {
+    teacher(teacherId: $teacherId) {
       status
       message
       data {
-        studentId
+        teacherId
         firstName
         lastName
         gender
         dateOfBirth
         mobileNumber
         address
-        className
-        section
-        rollNumber
-        admissionDate
+        qualification
+        experience
+        joiningDate
+        salary
         status
       }
     }
   }
 `;
 
-const UPDATE_STUDENT_MUTATION = `
-  mutation UpdateStudent(
-    $studentId: Int!
+const UPDATE_TEACHER_MUTATION = `
+  mutation UpdateTeacher(
+    $teacherId: Int!
     $firstName: String!
     $lastName: String!
     $gender: String!
     $dateOfBirth: String!
     $mobileNumber: String!
     $address: String!
-    $className: String!
-    $section: String!
-    $rollNumber: String!
-    $admissionDate: String!
+    $qualification: String!
+    $experience: Int!
+    $joiningDate: String!
+    $salary: Float!
     $status: String!
   ) {
-    updateStudent(
-      studentId: $studentId
+    updateTeacher(
+      teacherId: $teacherId
       firstName: $firstName
       lastName: $lastName
       gender: $gender
       dateOfBirth: $dateOfBirth
       mobileNumber: $mobileNumber
       address: $address
-      className: $className
-      section: $section
-      rollNumber: $rollNumber
-      admissionDate: $admissionDate
+      qualification: $qualification
+      experience: $experience
+      joiningDate: $joiningDate
+      salary: $salary
       status: $status
     ) {
       status
       message
       data {
-        studentId
+        teacherId
         firstName
         lastName
         gender
         dateOfBirth
         mobileNumber
         address
-        className
-        section
-        rollNumber
-        admissionDate
+        qualification
+        experience
+        joiningDate
+        salary
         status
       }
     }
   }
 `;
 
-type StudentFormState = {
+type TeacherFormState = {
   firstName: string;
   lastName: string;
   gender: string;
   dateOfBirth: string;
   mobileNumber: string;
   address: string;
-  className: string;
-  section: string;
-  rollNumber: string;
-  admissionDate: string;
+  qualification: string;
+  experience: number;
+  joiningDate: string;
+  salary: number;
   status: string;
 };
 
-const EMPTY_VALUES: StudentFormState = {
+const EMPTY_VALUES: TeacherFormState = {
   firstName: "",
   lastName: "",
   gender: "",
   dateOfBirth: "",
   mobileNumber: "",
   address: "",
-  className: "",
-  section: "",
-  rollNumber: "",
-  admissionDate: "",
+  qualification: "",
+  experience: 0,
+  joiningDate: "",
+  salary: 0.0,
   status: "Active",
 };
 
-export default function EditStudentPage() {
+export default function EditTeacherPage() {
   const router = useRouter();
   const params = useParams();
-  const studentIdParam = params?.studentId as string;
+  const teacherIdParam = params?.teacherId as string;
 
   const [initialValues, setInitialValues] =
-    useState<StudentFormState>(EMPTY_VALUES);
+    useState<TeacherFormState>(EMPTY_VALUES);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const endpoint = process.env.NEXT_PUBLIC_GRAPHQL_URL;
 
-  // Fetch the student details on mount
+  // Fetch the teacher details on mount
 
   useEffect(() => {
-    async function fetchStudent() {
+    async function fetchTeacher() {
       try {
         setLoading(true);
 
-        if (!studentIdParam) throw new Error("No studentId in route");
+        if (!teacherIdParam) throw new Error("No teacherId in route");
 
         const res = await axiosClient.post("", {
-          query: GET_STUDENT_QUERY,
+          query: GET_TEACHER_QUERY,
           variables: {
-            studentId: Number(studentIdParam),
+            teacherId: Number(teacherIdParam),
           },
         });
 
         // GraphQL errors (200 OK but failed)
         if (res.data.errors) {
           throw new Error(
-            res.data.errors[0]?.message || "Failed to fetch student",
+            res.data.errors[0]?.message || "Failed to fetch teacher details",
           );
         }
 
-        const student = res.data?.data?.student?.data;
-        if (!student) {
-          throw new Error("Student not found");
+        const teacher = res.data?.data?.teacher?.data;
+        if (!teacher) {
+          throw new Error("Teacher not found");
         }
 
         setInitialValues({
-          firstName: student.firstName ?? "",
-          lastName: student.lastName ?? "",
-          gender: student.gender ?? "",
-          mobileNumber: student.mobileNumber ?? "",
-          address: student.address ?? "",
-          className: student.className ?? "",
-          section: student.section ?? "",
-          rollNumber: student.rollNumber ?? "",
-          dateOfBirth: student.dateOfBirth
-            ? new Date(Number(student.dateOfBirth)).toISOString().split("T")[0]
+          firstName: teacher.firstName ?? "",
+          lastName: teacher.lastName ?? "",
+          gender: teacher.gender ?? "",
+          mobileNumber: teacher.mobileNumber ?? "",
+          address: teacher.address ?? "",
+          qualification: teacher.qualification ?? "",
+          experience: teacher.experience ?? 0,
+          joiningDate: teacher.joiningDate
+            ? new Date(Number(teacher.joiningDate)).toISOString().split("T")[0]
             : "",
 
-          admissionDate: student.admissionDate
-            ? new Date(Number(student.admissionDate))
-                .toISOString()
-                .split("T")[0]
+          dateOfBirth: teacher.dateOfBirth
+            ? new Date(Number(teacher.dateOfBirth)).toISOString().split("T")[0]
             : "",
 
-          status: student.status ?? "Active",
+          salary: teacher.salary ?? 0.0,
+          status: teacher.status ?? "Active",
         });
       } catch (err: any) {
         console.error(err);
-        toast.error(err?.message || "Failed to load student");
+        toast.error(err?.message || "Failed to load teacher");
       } finally {
         setLoading(false);
       }
     }
 
-    fetchStudent();
-  }, [studentIdParam]);
+    fetchTeacher();
+  }, [teacherIdParam]);
 
   // Formik setup
-  const formik = useFormik<StudentFormState>({
+  const formik = useFormik<TeacherFormState>({
     initialValues,
     enableReinitialize: true, // important so values update when initialValues change
     validate: (values) => {
-      const errors: Partial<Record<keyof StudentFormState, string>> = {};
+      const errors: Partial<Record<keyof TeacherFormState, string>> = {};
 
       if (!values.firstName.trim()) errors.firstName = "First name is required";
       if (!values.lastName.trim()) errors.lastName = "Last name is required";
@@ -193,48 +191,51 @@ export default function EditStudentPage() {
       if (!values.mobileNumber.trim())
         errors.mobileNumber = "Mobile is required";
       if (!values.address.trim()) errors.address = "Address is required";
-      if (!values.className.trim()) errors.className = "Class is required";
-      if (!values.section.trim()) errors.section = "Section is required";
-      if (!values.rollNumber.trim())
-        errors.rollNumber = "Roll number is required";
-      if (!values.admissionDate)
-        errors.admissionDate = "Admission date is required";
+      if (!values.qualification.trim()) errors.qualification = "Qualification is required";
+      if (!values.experience) errors.experience = "Experience is required";
+      if (!values.salary) errors.salary = "Salary is required";
+      if (!values.joiningDate.trim())
+        errors.joiningDate = "Joining date is required";
       if (!values.status) errors.status = "Status is required";
 
       return errors;
     },
     onSubmit: async (values) => {
       try {
-        if (!studentIdParam) throw new Error("No studentId in route");
+        if (!teacherIdParam) throw new Error("No teacherId in route");
 
         setSaving(true);
 
         const response = await axiosClient.post("", {
-          query: UPDATE_STUDENT_MUTATION,
+          query: UPDATE_TEACHER_MUTATION,
           variables: {
-            studentId: Number(studentIdParam),
+            teacherId: Number(teacherIdParam),
             ...values,
+            experience: Number(values.experience),       // ✅ convert to number
+            salary: Number(values.salary),               // ✅ convert to number
+            dateOfBirth: new Date(values.dateOfBirth).toISOString(),
+            joiningDate: new Date(values.joiningDate).toISOString(),
           },
         });
 
         const json = response.data;
-        console.log("update student json", json);
+        console.log("update teacher json", json);
 
         // 🔥 Handle GraphQL errors
         if (json.errors) {
           throw new Error(
-            json.errors?.[0]?.message || "Failed to update student",
+            json.errors?.[0]?.message || "Failed to update teacher",
           );
         }
 
-        const result = json.data?.updateStudent;
+        const result = json.data?.updateTeacher;
 
         if (!result || result.status !== "success") {
-          throw new Error(result?.message || "Failed to update student");
+          throw new Error(result?.message || "Failed to update teacher");
         }
 
-        toast.success(result.message || "Student updated successfully ✅");
-        router.push("/students");
+        toast.success(result.message || "Teacher updated successfully ✅");
+        router.push("/teachers");
       } catch (err: any) {
         console.error(err);
         toast.error(err?.message || "Update failed");
@@ -254,7 +255,7 @@ export default function EditStudentPage() {
           <ArrowLeft className="w-4 h-4 mr-1" />
           Back
         </button>
-        <p className="text-gray-500">Loading student details…</p>
+        <p className="text-gray-500">Loading teacher details…</p>
       </div>
     );
   }
@@ -274,9 +275,9 @@ export default function EditStudentPage() {
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Edit Student</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Edit Teacher</h1>
         </div>
-        <span className="text-sm text-gray-500">ID: {studentIdParam}</span>
+        <span className="text-sm text-gray-500">ID: {teacherIdParam}</span>
       </div>
 
       {/* Form Card */}
@@ -381,19 +382,19 @@ export default function EditStudentPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Admission Date
+                Joining Date
             </label>
             <input
               type="date"
-              name="admissionDate"
-              value={values.admissionDate}
+              name="joiningDate"
+              value={values.joiningDate}
               onChange={handleChange}
               onBlur={handleBlur}
               className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            {touched.admissionDate && errors.admissionDate && (
+            {touched.joiningDate && errors.joiningDate && (
               <p className="mt-1 text-xs text-red-500">
-                {errors.admissionDate}
+                {errors.joiningDate}
               </p>
             )}
           </div>
@@ -420,52 +421,52 @@ export default function EditStudentPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Class
+                Qualification
             </label>
             <input
-              name="className"
-              value={values.className}
+              name="qualification"
+              value={values.qualification}
               onChange={handleChange}
               onBlur={handleBlur}
               className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="e.g. 1st year"
             />
-            {touched.className && errors.className && (
-              <p className="mt-1 text-xs text-red-500">{errors.className}</p>
+            {touched.qualification && errors.qualification && (
+              <p className="mt-1 text-xs text-red-500">{errors.qualification}</p>
             )}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Section
+                Experience
             </label>
             <input
-              name="section"
-              value={values.section}
+              name="experience"
+              value={values.experience}
               onChange={handleChange}
               onBlur={handleBlur}
               className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="e.g. A"
+              placeholder="e.g. 5 years"
             />
-            {touched.section && errors.section && (
-              <p className="mt-1 text-xs text-red-500">{errors.section}</p>
+            {touched.experience && errors.experience && (
+              <p className="mt-1 text-xs text-red-500">{errors.experience}</p>
             )}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Roll Number
+                Salary
             </label>
             <input
-              name="rollNumber"
-              value={values.rollNumber}
+              name="salary"
+              value={values.salary}
               onChange={handleChange}
               onBlur={handleBlur}
               className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="e.g. bca101"
+              placeholder="e.g. 50000"
             />
-            {touched.rollNumber && errors.rollNumber && (
-              <p className="mt-1 text-xs text-red-500">{errors.rollNumber}</p>
+            {touched.salary && errors.salary && (
+              <p className="mt-1 text-xs text-red-500">{errors.salary}</p>
             )}
           </div>
         </div>
@@ -496,7 +497,7 @@ export default function EditStudentPage() {
         <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
           <button
             type="button"
-            onClick={() => router.push("/students")}
+            onClick={() => router.push("/teachers")}
             className="px-4 py-2.5 text-sm font-medium rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             Cancel
