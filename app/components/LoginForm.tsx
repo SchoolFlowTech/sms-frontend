@@ -78,11 +78,11 @@ export default function LoginForm() {
   //   }
   // }, [router]);
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
-      <h2 className="text-3xl font-extrabold text-gray-900 text-center">
+    <form className="space-y-3" onSubmit={handleSubmit}>
+      <h2 className="text-2xl font-extrabold text-gray-900 text-center">
         Welcome Back!
       </h2>
-      <p className="text-gray-500 text-center mb-6">
+      <p className="text-gray-500 text-center mb-4.5">
         Sign in to your account to continue.
       </p>
 
@@ -92,14 +92,15 @@ export default function LoginForm() {
           Email Address
         </label>
         <div className="relative">
-          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="email"
             name="email"
             placeholder="you@school.edu"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-gray-50 rounded-xl text-base border border-gray-100 focus:ring-2 focus:ring-primary focus:border-primary/50 transition-all focus:outline-none"
+            className="w-full pl-12 pr-4 py-3 bg-gray-50 rounded-xl text-base border border-gray-200 focus:border-blue-500 
+                      focus:ring-4 focus:ring-blue-100 focus:bg-white transition-all duration-200 focus:outline-none"
             required
           />
         </div>
@@ -111,14 +112,15 @@ export default function LoginForm() {
           Password
         </label>
         <div className="relative">
-          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="password"
             name="password"
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-gray-50 rounded-xl text-base border border-gray-100 focus:ring-2 focus:ring-primary focus:border-primary/50 transition-all focus:outline-none"
+            className="w-full pl-12 pr-4 py-3 bg-gray-50 rounded-xl text-base border border-gray-200 focus:border-blue-500 
+                      focus:ring-4 focus:ring-blue-100 focus:bg-white transition-all duration-200 focus:outline-none"
             required
           />
         </div>
@@ -134,7 +136,7 @@ export default function LoginForm() {
         <div />
         <a
           href="#"
-          className="text-sm font-medium text-primary hover:underline"
+          className="text-xs font-medium text-primary hover:underline"
         >
           Forgot Password?
         </a>
@@ -144,9 +146,9 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full flex items-center justify-center py-3 bg-primary text-white rounded-xl text-lg font-bold shadow-xl shadow-primary/30 transform transition-all duration-300 hover:bg-primary/90 hover:scale-[1.01] disabled:opacity-60 disabled:hover:scale-100"
+        className="w-full flex items-center justify-center py-2.5 bg-primary text-white rounded-xl text-lg font-bold shadow-xl shadow-primary/30 transform transition-all duration-300 hover:bg-primary/90 hover:scale-[1.01] disabled:opacity-60 disabled:hover:scale-100"
       >
-        <LogIn className="w-5 h-5 mr-2" />
+        <LogIn className="w-5 h-5 mr-1" />
         {loading ? "Logging in..." : "Login to Account"}
       </button>
 
@@ -164,7 +166,7 @@ export default function LoginForm() {
         <img
           src="/google.png"
           alt="Google"
-          className="w-5 h-5 mr-2"
+          className="w-4 h-4 mr-2"
         />
         Sign in with Google
       </button>

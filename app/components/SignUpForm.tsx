@@ -81,8 +81,8 @@ export default function SignupForm() {
   }
 
   return (
-  <form className="space-y-6" onSubmit={handleSignup}>
-      <h2 className="text-3xl font-extrabold text-gray-900 text-center">Create Account</h2>
+    <form className="space-y-4" onSubmit={handleSignup}>
+      <h2 className="text-2xl font-extrabold text-gray-900 text-center">Create Account</h2>
       <p className="text-gray-500 text-center mb-6">Join your school dashboard</p>
 
       {/* First + Last Name */}
@@ -92,8 +92,9 @@ export default function SignupForm() {
           <input
             type="text"
             value={firstName}
-            onChange={(e)=>setFirstName(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200"
+            onChange={(e) => setFirstName(e.target.value)}
+            className="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 
+                      focus:ring-4 focus:ring-blue-100 focus:bg-white transition-all duration-200 focus:outline-none"
             required
           />
         </div>
@@ -103,8 +104,9 @@ export default function SignupForm() {
           <input
             type="text"
             value={lastName}
-            onChange={(e)=>setLastName(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200"
+            onChange={(e) => setLastName(e.target.value)}
+            className="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 
+                      focus:ring-4 focus:ring-blue-100 focus:bg-white transition-all duration-200 focus:outline-none"
             required
           />
         </div>
@@ -114,12 +116,13 @@ export default function SignupForm() {
       <div>
         <label className="text-sm font-medium">Email Address</label>
         <div className="relative">
-          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             type="email"
             value={email}
-            onChange={(e)=>setEmail(e.target.value)}
-            className="w-full pl-12 py-3 rounded-xl bg-gray-50 border border-gray-200"
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full pl-12 py-2 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 
+                      focus:ring-4 focus:ring-blue-100 focus:bg-white transition-all duration-200 focus:outline-none"
             required
           />
         </div>
@@ -129,12 +132,13 @@ export default function SignupForm() {
       <div>
         <label className="text-sm font-medium">Password</label>
         <div className="relative">
-          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             type="password"
             value={password}
-            onChange={(e)=>setPassword(e.target.value)}
-            className="w-full pl-12 py-3 rounded-xl bg-gray-50 border border-gray-200"
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full pl-12 py-2 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 
+                      focus:ring-4 focus:ring-blue-100 focus:bg-white transition-all duration-200 focus:outline-none"
             required
           />
         </div>

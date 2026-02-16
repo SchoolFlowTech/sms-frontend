@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import {
   LayoutDashboard,
   User,
+  UserCheck,
   BookOpen,
   Settings,
   Bell,
@@ -21,6 +22,7 @@ import { useEffect, useState } from "react";
 // We need the pathname here to correctly set the active state
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+  { name: "Employees", icon: UserCheck, path: "/employees" },
   { name: "Teachers", icon: LayoutDashboard, path: "/teachers" },
   { name: "Students", icon: User, path: "/students" },
   { name: "Courses", icon: BookOpen, path: "/courses" },

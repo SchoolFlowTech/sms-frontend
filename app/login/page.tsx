@@ -9,14 +9,14 @@ export default function AuthPage() {
   const [isLoginView, setIsLoginView] = useState(true);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#EEF1FF] via-[#F5F7FF] to-[#FDFBFF] px-4 py-8">
+    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#EEF1FF] via-[#F5F7FF] to-[#FDFBFF] px-4">
       {/* Outer wrapper to control max width */}
-      <div className="w-full max-w-5xl">
+      <div className="w-full max-w-5xl h-[calc(100vh-80px)] flex items-center">
         {/* Glassmorphism card */}
-        <div className="rounded-[32px] bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_24px_80px_rgba(15,23,42,0.18)] overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+        <div className="rounded-[32px] bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_24px_80px_rgba(15,23,42,0.18)] overflow-hidden grid grid-cols-1 lg:grid-cols-2 w-full h-full">
           
           {/* LEFT: Image + overlay stats */}
-          <div className="relative hidden lg:block">
+          <div className="relative hidden lg:block h-full">
             <img
               src="/2b50111f-f587-4a95-b7ea-3a14ebd8b794.jpeg"
               alt="School campus"
@@ -29,12 +29,12 @@ export default function AuthPage() {
             {/* Branding + tagline */}
             <div className="absolute top-6 left-6 right-6 flex items-center justify-between text-white/90">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-2xl bg-white/15 flex items-center justify-center text-base font-bold">
+                <div className="h-10 w-10 rounded-2xl bg-white/15 text-black flex items-center justify-center text-base font-bold">
                   SF
                 </div>
                 <div>
-                  <p className="text-sm font-semibold tracking-tight">SchoolFlow</p>
-                  <p className="text-xs text-white/70">Smart School Management</p>
+                  <p className="text-sm font-semibold tracking-tight text-black">SchoolFlow</p>
+                  <p className="text-xs text-black/70">Smart School Management</p>
                 </div>
               </div>
               <span className="hidden md:inline-flex rounded-full bg-white/15 px-3 py-1 text-[11px] font-medium">
@@ -43,7 +43,7 @@ export default function AuthPage() {
             </div>
 
             {/* Bottom stats chips */}
-            <div className="absolute bottom-6 left-6 right-6 grid grid-cols-2 gap-3 text-white">
+            <div className="sticky bottom-6 left-6 right-6 max-w-[90%] grid grid-cols-2 gap-3 text-white">
               <div className="rounded-2xl bg-white/12 px-4 py-3">
                 <p className="text-[11px] uppercase tracking-wide text-white/70">Active Students</p>
                 <p className="text-xl font-semibold leading-snug">892</p>
@@ -58,7 +58,7 @@ export default function AuthPage() {
           </div>
 
           {/* RIGHT: Auth content */}
-          <div className="p-6 sm:p-10 lg:p-12 flex flex-col">
+          <div className="p-3 lg:p-5 flex flex-col ">
             {/* Brand on mobile */}
             <div className="mb-6 flex items-center justify-between lg:hidden">
               <div className="flex items-center gap-3">
@@ -73,7 +73,7 @@ export default function AuthPage() {
             </div>
 
             {/* Toggle buttons */}
-            <div className="flex w-full max-w-sm mx-auto p-1 rounded-full bg-slate-100/70 border border-slate-200/80 mb-8">
+            <div className="flex w-full max-w-sm mx-auto p-1 rounded-full bg-slate-100/70 border border-slate-200/80 mb-6">
               <button
                 onClick={() => setIsLoginView(true)}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
@@ -82,7 +82,7 @@ export default function AuthPage() {
                     : "text-slate-600 hover:text-primary"
                 }`}
               >
-                <LogIn className="w-4 h-4" />
+                <LogIn className="w-3 h-3" />
                 Login
               </button>
               <button
@@ -93,7 +93,7 @@ export default function AuthPage() {
                     : "text-slate-600 hover:text-primary"
                 }`}
               >
-                <UserPlus className="w-4 h-4" />
+                <UserPlus className="w-3 h-3" />
                 Sign Up
               </button>
             </div>
@@ -106,7 +106,7 @@ export default function AuthPage() {
             </div>
 
             {/* Footer text */}
-            <p className="mt-8 text-[11px] text-center text-slate-400">
+            <p className="mt-4 text-[11px] text-center text-slate-400">
               By continuing, you agree to SchoolFlow&apos;s{" "}
               <span className="font-medium text-slate-500 hover:text-primary cursor-pointer">
                 Terms
