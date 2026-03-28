@@ -97,68 +97,77 @@ export default function EmployeesPage() {
                     Add Employee
                 </button>
             </div>
-            
+
 
             {/* Filters & Search Bar */}
-                  <div className="bg-white p-4 mb-5 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
-                    <div className="relative w-full md:w-96">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
+            <div className="bg-white p-4 mb-5 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div className="relative w-full md:w-96">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
                         type="text"
                         placeholder="Search by name, ID, qualification, or experience..."
                         value={searchTerm}
                         onChange={(e) => {
-                          setSearchTerm(e.target.value);
-                          setPage(1);
+                            setSearchTerm(e.target.value);
+                            setPage(1);
                         }}
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                      />
-                    </div>
-                    <div className="flex gap-2 w-full md:w-auto">
-                      <button
+                    />
+                </div>
+                <div className="flex gap-2 w-full md:w-auto">
+                    <button
                         className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 bg-white"
                         onClick={() => toast("Filters coming soon 😄")}
-                      >
+                    >
                         <Filter className="w-4 h-4" /> Filters
-                      </button>
-                      <button
+                    </button>
+                    <button
                         className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 bg-white"
                         onClick={() => {
-                          if (!filteredEmployees.length) {
-                            toast.error("No employees to export");
-                            return;
-                          }
-                          const headers = [
-                            "employeeId",
-                            "firstName",
-                            "lastName",
-                            "qualification",
-                            "experience",
-                            "mobileNumber",
-                            "status",
-                          ];
-                          const rows = filteredEmployees.map((t) =>
-                            headers
-                              .map((h) =>
-                                `"${String((t as any)[h] ?? "")
-                                  .replace(/"/g, '""')}"`
-                              )
-                              .join(",")
-                          );
-                          const csv = [headers.join(","), ...rows].join("\n");
-                          const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-                          const url = URL.createObjectURL(blob);
-                          const link = document.createElement("a");
-                          link.href = url;
-                          link.download = "teachers.csv";
-                          link.click();
-                          URL.revokeObjectURL(url);
+                            if (!filteredEmployees.length) {
+                                toast.error("No employees to export");
+                                return;
+                            }
+                            const headers = [
+                                "Employee ID",
+                                "First Name",
+                                "Last Name",
+                                "Department",
+                                "Contact",
+                                "Status",
+                            ];
+
+                            const keys = [
+                                "id",
+                                "firstName",
+                                "lastName",
+                                "department",
+                                "mobileNumber",
+                                "status",
+                            ];
+
+                            const rows = filteredEmployees.map((t: any) =>
+                                keys
+                                    .map((k) =>
+                                        `"${String(t[k] ?? "").replace(/"/g, '""')}"`
+                                    )
+                                    .join(",")
+                            );
+
+                            const csv = [headers.join(","), ...rows].join("\n");
+                            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement("a");
+                            link.href = url;
+                            link.download = "employees.csv";
+                            link.click();
+                            URL.revokeObjectURL(url);
                         }}
-                      >
+                    >
                         Export CSV
-                      </button>
-                    </div>
-                  </div>
+                    </button>
+                </div>
+            </div>
 
             {/* Search */}
             {/* <div className="relative w-80">
@@ -208,8 +217,8 @@ export default function EmployeesPage() {
                                     <td className="py-4 px-6">
                                         <span
                                             className={`px-2 py-1 text-xs rounded-full ${isActive
-                                                    ? "bg-green-100 text-green-700"
-                                                    : "bg-red-100 text-red-700"
+                                                ? "bg-green-100 text-green-700"
+                                                : "bg-red-100 text-red-700"
                                                 }`}
                                         >
                                             {emp.status}

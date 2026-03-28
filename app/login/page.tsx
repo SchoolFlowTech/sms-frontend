@@ -37,9 +37,9 @@ export default function AuthPage() {
                   <p className="text-xs text-black/70">Smart School Management</p>
                 </div>
               </div>
-              <span className="hidden md:inline-flex rounded-full bg-white/15 px-3 py-1 text-[11px] font-medium">
+              {/* <span className="hidden md:inline-flex rounded-full bg-white/15 px-3 py-1 text-[11px] font-medium">
                 v1.0 • Early Access
-              </span>
+              </span> */}
             </div>
 
             {/* Bottom stats chips */}
