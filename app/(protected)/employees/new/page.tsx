@@ -53,6 +53,20 @@ export default function NewEmployeePage() {
             if (!values.joiningDate)
                 errors.joiningDate = "Joining date required";
 
+            if (!values.address.trim()){
+                errors.address = "Address is required";
+            }
+
+            if (values.role === "Teacher"){
+                if (!values.qualification.trim()){
+                    errors.qualification = "Qualification is required for teachers";
+                }
+
+                if (!values.experience){
+                    errors.experience = "Experience is required for teachers";
+                }
+            }
+
             return errors;
         },
 
@@ -92,7 +106,7 @@ export default function NewEmployeePage() {
                         <ArrowLeft className="w-4 h-4 mr-1" />
                         Back
                     </button>
-                    <h1 className="text-2xl font-bold text-gray-900">Add New Teacher</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">Add New Employee</h1>
                 </div>
             </div>
 
@@ -113,6 +127,7 @@ export default function NewEmployeePage() {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="Enter your first name..."
                         />
                         {touched.firstName && errors.firstName && (
                             <p className="mt-1 text-xs text-red-500">{errors.firstName}</p>
@@ -128,6 +143,7 @@ export default function NewEmployeePage() {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                             placeholder="Enter your last name..."
                         />
                         {touched.lastName && errors.lastName && (
                             <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>
@@ -173,6 +189,7 @@ export default function NewEmployeePage() {
                             minLength={0}
                             maxLength={10}
                             className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                             placeholder="Enter your mobile number..."
                         />
                         {touched.mobileNumber && errors.mobileNumber && (
                             <p className="mt-1 text-xs text-red-500">{errors.mobileNumber}</p>
@@ -211,6 +228,7 @@ export default function NewEmployeePage() {
                         onBlur={handleBlur}
                         className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         rows={2}
+                         placeholder="Enter your address..."
                     />
                     {touched.address && errors.address && (
                         <p className="mt-1 text-xs text-red-500">{errors.address}</p>
@@ -274,9 +292,9 @@ export default function NewEmployeePage() {
                             <option value="Librarian">Librarian</option>
                             <option value="Other">Other</option>
                         </select>
-                        {touched.role && errors.role && (
+                        {/* {touched.role && errors.role && (
                             <p className="mt-1 text-xs text-red-500">{errors.role}</p>
-                        )}
+                        )} */}
                     </div>
 
                 </div>
@@ -295,6 +313,7 @@ export default function NewEmployeePage() {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                 placeholder="Enter your qualification..."
                             />
                             {touched.qualification && errors.qualification && (
                                 <p className="mt-1 text-xs text-red-500">
@@ -374,7 +393,7 @@ export default function NewEmployeePage() {
                 <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                     <button
                         type="button"
-                        onClick={() => router.push("/teachers")}
+                        onClick={() => router.push("/employees")}
                         className="px-4 py-2.5 text-sm font-medium rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50"
                     >
                         Cancel
@@ -385,7 +404,7 @@ export default function NewEmployeePage() {
                         className="inline-flex items-center px-4 py-2.5 text-sm font-semibold rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60"
                     >
                         <Save className="w-4 h-4 mr-2" />
-                        {saving ? "Saving..." : "Create Teacher"}
+                        {saving ? "Saving..." : "Create Employee"}
                     </button>
                 </div>
             </form>
