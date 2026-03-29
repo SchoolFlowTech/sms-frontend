@@ -1,71 +1,89 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Search, Plus, Filter } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast/headless";
+import axiosClient from "../../lib/axiosClient.js";
+import { EMPLOYEE_QUERY } from "../../gql/Employee/employee";
 
 type Employee = {
-    id: number;
+    id: string;
     firstName: string;
     lastName: string;
-    role: string;
-    department: string;
     mobileNumber: string;
+    address: string;
+    joiningDate: string;
+    salary: number;
     status: string;
+    type: string;
 };
 
 export default function EmployeesPage() {
     const router = useRouter();
     const pageSize = 10;
 
+    const [employees, setEmployees] = useState<Employee[]>([]);
+    const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
-
-    // ✅ Dummy Data
-    const [employees] = useState<Employee[]>([
-        {
-            id: 1,
-            firstName: "Ali",
-            lastName: "Husain",
-            role: "Teacher",
-            department: "Science",
-            mobileNumber: "9876543210",
-            status: "Active",
-        },
-        {
-            id: 2,
-            firstName: "Junaid",
-            lastName: "Khan",
-            role: "Accountant",
-            department: "Finance",
-            mobileNumber: "9123456780",
-            status: "Inactive",
-        },
-    ]);
-
     const [searchTerm, setSearchTerm] = useState("");
 
-    // ✅ Simple Search Filter
-    const filteredEmployees = useMemo(() => {
-        const term = searchTerm.toLowerCase().trim();
-        if (!term) return employees;
-
-        return employees.filter((emp) => {
-            const fullName = `${emp.firstName} ${emp.lastName}`.toLowerCase();
-            const role = emp.role.toLowerCase();
-            const department = emp.department.toLowerCase();
-            const mobile = emp.mobileNumber.toLowerCase();
-            const status = emp.status.toLowerCase();
-
-            return (
-                fullName.includes(term) ||
-                role.includes(term) ||
-                department.includes(term) ||
-                mobile.includes(term) ||
-                status.includes(term)
+    async function fetchEmployees() {
+        try {
+          setLoading(true);
+    
+          const res = await axiosClient.post("/", {
+            query: EMPLOYEE_QUERY,
+          });
+    
+          // GraphQL errors (200 OK but failed)
+          if (res.data.errors) {
+            throw new Error(
+              res.data.errors[0]?.message || "Failed to fetch employees"
             );
-        });
-    }, [employees, searchTerm]);
+          }
+    
+          const list: Employee[] = res.data?.data?.employees?.data ?? [];
+          setEmployees(list);
+        } catch (err: any) {
+          console.error(err);
+          toast.error(err?.message || "Failed to load employees");
+        } finally {
+          setLoading(false);
+        }
+      }
+    
+    
+      useEffect(() => {
+        fetchEmployees();
+      }, []);
+
+   // filter + paginate on client
+     const filteredEmployees = useMemo(() => {
+       const term = searchTerm.toLowerCase().trim();
+       if (!term) return employees;
+   
+       return employees.filter((s) => {
+         const fullName = `${s.firstName ?? ""} ${s.lastName ?? ""}`
+           .toLowerCase()
+           .trim();
+   
+         const id = String(s.id ?? "").toLowerCase();
+         const firstname = (s.firstName ?? "").toLowerCase();
+         const lastName = (s.lastName ?? "").toLowerCase();
+         const mobileNumber = (s.mobileNumber ?? "").toLowerCase();
+         const type = (s.type ?? "").toLowerCase();
+   
+         return (
+           fullName.includes(term) ||
+           id.includes(term) ||
+           firstname.includes(term) ||
+           lastName.includes(term) ||
+           mobileNumber.includes(term) ||
+           type.includes(term)
+         );
+       });
+     }, [employees, searchTerm]);
 
 
     const total = filteredEmployees.length;
@@ -188,7 +206,6 @@ export default function EmployeesPage() {
                         <tr>
                             <th className="py-4 px-6">Employee</th>
                             <th className="py-4 px-6">Role</th>
-                            <th className="py-4 px-6">Department</th>
                             <th className="py-4 px-6">Contact</th>
                             <th className="py-4 px-6">Status</th>
                             <th className="py-4 px-6 text-right">Actions</th>
@@ -206,10 +223,7 @@ export default function EmployeesPage() {
                                         {emp.firstName} {emp.lastName}
                                     </td>
                                     <td className="py-4 px-6 text-gray-600">
-                                        {emp.role}
-                                    </td>
-                                    <td className="py-4 px-6 text-gray-600">
-                                        {emp.department}
+                                        {emp.type}
                                     </td>
                                     <td className="py-4 px-6 text-gray-600">
                                         {emp.mobileNumber}

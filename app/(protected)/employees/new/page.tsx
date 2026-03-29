@@ -5,31 +5,90 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Save } from "lucide-react";
 import toast from "react-hot-toast";
 import { useFormik } from "formik";
-// import { addEmployee } from "@/app/store/employeeStore";
+import axiosClient from "@/app/lib/axiosClient";
+import { CREATE_EMPLOYEE_MUTATION } from "../../../gql/Employee/employee";
+
+const EmployeeType = {
+    TEACHER: "TEACHER",
+    ACCOUNTANT: "ACCOUNTANT",
+    ADMIN_STAFF: "ADMIN_STAFF",
+    PRINCIPAL: "PRINCIPAL",
+    LIBRARIAN: "LIBRARIAN",
+    SUPPORT_STAFF: "SUPPORT_STAFF"
+} as const;
+
+type EmployeeTypeType = typeof EmployeeType[keyof typeof EmployeeType];
+
+type EmployeeFormState = {
+    firstName: string;
+    lastName: string;
+    gender?: string;
+    dateOfBirth?: string;
+    mobileNumber: string;
+    address: string;
+    qualification?: string;
+    experience?: number;
+    joiningDate: string;
+    salary: number;
+    status: string;
+    type: EmployeeTypeType;
+
+    certification?: string;
+    Accexperience?: string;
+
+    staffDepartment?: string;
+};
+
+const getInitialValues = (type: EmployeeTypeType): EmployeeFormState => {
+    const base = {
+        firstName: "",
+        lastName: "",
+        mobileNumber: "",
+        address: "",
+        salary: 0,
+        joiningDate: "",
+        status: "Active",
+        type
+    };
+
+    switch (type) {
+        case EmployeeType.TEACHER:
+            return {
+                ...base,
+                type: EmployeeType.TEACHER,
+                qualification: "",
+                experience: 0,
+                dateOfBirth: "",
+                gender: ""
+            };
+
+        case EmployeeType.ACCOUNTANT:
+            return {
+                ...base,
+                type: EmployeeType.ACCOUNTANT,
+                certification: "",
+                Accexperience: ""
+            };
+
+        case EmployeeType.ADMIN_STAFF:
+            return {
+                ...base,
+                type: EmployeeType.ADMIN_STAFF,
+                staffDepartment: ""
+            };
+
+        default:
+            throw new Error("Invalid type");
+    }
+};
 
 export default function NewEmployeePage() {
     const router = useRouter();
     const [saving, setSaving] = useState(false);
+    const endpoint = process.env.NEXT_PUBLIC_GRAPHQL_URL;
 
     const formik = useFormik({
-        initialValues: {
-            firstName: "",
-            lastName: "",
-            role: "",
-            mobileNumber: "",
-            address: "",
-            salary: 0,
-            joiningDate: "",
-            status: "Active",
-
-
-            // For Teachers
-            qualification: "",
-            experience: "",
-            dateOfBirth: "",
-
-
-        },
+        initialValues: getInitialValues(EmployeeType.ADMIN_STAFF),
 
         validate: (values) => {
             const errors: any = {};
@@ -40,10 +99,6 @@ export default function NewEmployeePage() {
             if (!values.lastName.trim())
                 errors.lastName = "Last name is required";
 
-            if (!values.role.trim())
-                errors.role = "Role is required";
-
-
             if (!values.mobileNumber.match(/^[0-9]{10}$/))
                 errors.mobileNumber = "Mobile must be 10 digits";
 
@@ -53,36 +108,100 @@ export default function NewEmployeePage() {
             if (!values.joiningDate)
                 errors.joiningDate = "Joining date required";
 
-            if (!values.address.trim()){
+            if (!values.address.trim()) {
                 errors.address = "Address is required";
             }
 
-            if (values.role === "Teacher"){
-                if (!values.qualification.trim()){
+            if (values.type === EmployeeType.TEACHER) {
+                if (!values.qualification?.trim()) {
                     errors.qualification = "Qualification is required for teachers";
                 }
 
-                if (!values.experience){
+                if (!values.experience) {
                     errors.experience = "Experience is required for teachers";
+                }
+
+                if (!values.dateOfBirth) {
+                    errors.dateOfBirth = "Date of Birth is required for teachers";
+                }
+
+                if (!values.gender) {
+                    errors.gender = "Gender is required for teachers";
+                }
+            }
+
+            if (values.type === EmployeeType.ACCOUNTANT) {
+                if (!values.certification) {
+                    errors.certification = "certification is required for Accountant";
+                }
+
+                if (!values.Accexperience) {
+                    errors.Accexperience = "Accexperience is required for Accountant";
+                }
+
+            }
+
+            if (values.type === EmployeeType.ADMIN_STAFF) {
+                if (!values.staffDepartment) {
+                    errors.staffDepartment = "Department is required for Admin Staff";
                 }
             }
 
             return errors;
         },
 
-        onSubmit: (values) => {
+        onSubmit: async (values) => {
             try {
+                if (!endpoint) throw new Error("Backend URL missing!")
                 setSaving(true);
 
-                const newEmployee = {
-                    id: Date.now(),
-                    ...values,
+                // Build the data object based on the type
+                let data: any = {
+                    firstName: values.firstName,
+                    lastName: values.lastName,
+                    mobileNumber: values.mobileNumber,
+                    address: values.address,
+                    salary: Number(values.salary),
+                    joiningDate: values.joiningDate,
+                    status: values.status,
+                    type: values.type,
                 };
 
-                // addEmployee(newEmployee);
+                if (values.type === EmployeeType.TEACHER) {
+                    data.qualification = values.qualification;
+                    data.experience = values.experience;
+                    data.gender = values.gender;
+                    data.dateOfBirth = values.dateOfBirth;
+                } else if (values.type === EmployeeType.ACCOUNTANT) {
+                    data.certification = values.certification;
+                    data.Accexperience = values.Accexperience;
+                } else if (values.type === EmployeeType.ADMIN_STAFF) {
+                    data.staffDepartment = values.staffDepartment;
+                }
 
-                toast.success("Employee created successfully 🎉");
+                const response = await axiosClient.post("", {
+                    query: CREATE_EMPLOYEE_MUTATION,
+                    variables: {
+                        data
+                    },
+                });
 
+
+                const json = response.data;
+
+                // 🔥 Handle GraphQL errors
+                if (json.errors) {
+                    throw new Error(
+                        json.errors?.[0]?.message || "Failed to create Employee",
+                    );
+                }
+
+                const result = json.data?.createEmployee;
+                if (!result || result.status !== "success") {
+                    throw new Error(result?.message || "Failed to create employee");
+                }
+
+                toast.success(result.message || "Employee created successfully 🎉");
                 router.push("/employees");
             } catch {
                 toast.error("Something went wrong");
@@ -143,7 +262,7 @@ export default function NewEmployeePage() {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                             placeholder="Enter your last name..."
+                            placeholder="Enter your last name..."
                         />
                         {touched.lastName && errors.lastName && (
                             <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>
@@ -189,7 +308,7 @@ export default function NewEmployeePage() {
                             minLength={0}
                             maxLength={10}
                             className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                             placeholder="Enter your mobile number..."
+                            placeholder="Enter your mobile number..."
                         />
                         {touched.mobileNumber && errors.mobileNumber && (
                             <p className="mt-1 text-xs text-red-500">{errors.mobileNumber}</p>
@@ -228,7 +347,7 @@ export default function NewEmployeePage() {
                         onBlur={handleBlur}
                         className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         rows={2}
-                         placeholder="Enter your address..."
+                        placeholder="Enter your address..."
                     />
                     {touched.address && errors.address && (
                         <p className="mt-1 text-xs text-red-500">{errors.address}</p>
@@ -243,6 +362,7 @@ export default function NewEmployeePage() {
                         </label>
                         <input
                             name="salary"
+                            type="number"
                             value={values.salary}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -278,18 +398,16 @@ export default function NewEmployeePage() {
                             Role
                         </label>
                         <select
-                            name="role"
-                            value={values.role}
+                            name="type"
+                            value={values.type}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            defaultValue={"Admin"}
+                            defaultValue="Admin Staff"
                             className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >
-                            <option value="Admin">Admin</option>
-                            <option value="Teacher">Teacher</option>
-                            <option value="Accountant">Accountant</option>
-                            <option value="Staff">Staff</option>
-                            <option value="Librarian">Librarian</option>
+                            <option value={EmployeeType.ADMIN_STAFF}>Admin Staff</option>
+                            <option value={EmployeeType.TEACHER}>Teacher</option>
+                            <option value={EmployeeType.ACCOUNTANT}>Accountant</option>
                             <option value="Other">Other</option>
                         </select>
                         {/* {touched.role && errors.role && (
@@ -299,8 +417,32 @@ export default function NewEmployeePage() {
 
                 </div>
 
-                {values.role === "Teacher" && (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {values.type === EmployeeType.ADMIN_STAFF && (
+                    <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
+                        {/* Department */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Department
+                            </label>
+                            <input
+                                name="staffDepartment"
+                                value={values.staffDepartment}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="Enter your Department..."
+                            />
+                            {touched.staffDepartment && errors.staffDepartment && (
+                                <p className="mt-1 text-xs text-red-500">
+                                    {errors.staffDepartment}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {values.type === EmployeeType.TEACHER && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                         {/* Qualification */}
                         <div>
@@ -313,11 +455,31 @@ export default function NewEmployeePage() {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                 placeholder="Enter your qualification..."
+                                placeholder="Enter your qualification..."
                             />
                             {touched.qualification && errors.qualification && (
                                 <p className="mt-1 text-xs text-red-500">
                                     {errors.qualification}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Gender */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Gender
+                            </label>
+                            <input
+                                name="gender"
+                                value={values.gender}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="Enter your gender..."
+                            />
+                            {touched.gender && errors.gender && (
+                                <p className="mt-1 text-xs text-red-500">
+                                    {errors.gender}
                                 </p>
                             )}
                         </div>
@@ -334,6 +496,7 @@ export default function NewEmployeePage() {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="Enter your experience in years..."
                             />
                             {touched.experience && errors.experience && (
                                 <p className="mt-1 text-xs text-red-500">
@@ -358,6 +521,51 @@ export default function NewEmployeePage() {
                             {touched.dateOfBirth && errors.dateOfBirth && (
                                 <p className="mt-1 text-xs text-red-500">
                                     {errors.dateOfBirth}
+                                </p>
+                            )}
+                        </div>
+
+                    </div>
+                )}
+
+                {values.type === EmployeeType.ACCOUNTANT && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {/* Certification */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Certification
+                            </label>
+                            <input
+                                name="certification"
+                                value={values.certification}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="Enter your certification..."
+                            />
+                            {touched.certification && errors.certification && (
+                                <p className="mt-1 text-xs text-red-500">
+                                    {errors.certification}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Experience */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Experience
+                            </label>
+                            <input
+                                name="Accexperience"
+                                value={values.Accexperience}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="Enter your Accountant Experience..."
+                            />
+                            {touched.Accexperience && errors.Accexperience && (
+                                <p className="mt-1 text-xs text-red-500">
+                                    {errors.Accexperience}
                                 </p>
                             )}
                         </div>
