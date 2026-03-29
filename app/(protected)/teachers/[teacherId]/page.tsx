@@ -6,78 +6,7 @@ import toast from "react-hot-toast";
 import { ArrowLeft, Save } from "lucide-react";
 import { useFormik } from "formik";
 import axiosClient from "../../../lib/axiosClient";
-
-const GET_TEACHER_QUERY = `
-  query GetTeacher($teacherId: Int!) {
-    teacher(teacherId: $teacherId) {
-      status
-      message
-      data {
-        teacherId
-        firstName
-        lastName
-        gender
-        dateOfBirth
-        mobileNumber
-        address
-        qualification
-        experience
-        joiningDate
-        salary
-        status
-      }
-    }
-  }
-`;
-
-const UPDATE_TEACHER_MUTATION = `
-  mutation UpdateTeacher(
-    $teacherId: Int!
-    $firstName: String!
-    $lastName: String!
-    $gender: String!
-    $dateOfBirth: String!
-    $mobileNumber: String!
-    $address: String!
-    $qualification: String!
-    $experience: Int!
-    $joiningDate: String!
-    $salary: Float!
-    $status: String!
-  ) {
-    updateTeacher(
-      teacherId: $teacherId
-      firstName: $firstName
-      lastName: $lastName
-      gender: $gender
-      dateOfBirth: $dateOfBirth
-      mobileNumber: $mobileNumber
-      address: $address
-      qualification: $qualification
-      experience: $experience
-      joiningDate: $joiningDate
-      salary: $salary
-      status: $status
-    ) {
-      status
-      message
-      data {
-        teacherId
-        firstName
-        lastName
-        gender
-        dateOfBirth
-        mobileNumber
-        address
-        qualification
-        experience
-        joiningDate
-        salary
-        status
-      }
-    }
-  }
-`;
+import { GET_TEACHER_QUERY, UPDATE_TEACHER_MUTATION } from "../../../gql/Teachers/teacher";
 
 type TeacherFormState = {
   firstName: string;
