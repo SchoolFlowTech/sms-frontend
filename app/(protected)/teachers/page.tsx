@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Search, Filter, Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Search, Filter } from "lucide-react";
 import toast from "react-hot-toast";
 import axiosClient from "../../lib/axiosClient.js";
 
@@ -12,18 +11,20 @@ const TEACHER_QUERY = `
       status
       message
       data {
-        teacherId
-        firstName
-        lastName
+        id
         gender
         dateOfBirth
-        mobileNumber
-        address
         qualification
         experience
-        joiningDate
-        salary
-        status
+        employee {
+          firstName
+          lastName
+          mobileNumber
+          address
+          joiningDate
+          salary
+          status
+        }
       }
     }
   }
@@ -45,8 +46,6 @@ type Teacher = {
 };
 
 export default function StudentsPage() {
-  const router = useRouter();
-
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -69,7 +68,22 @@ export default function StudentsPage() {
         );
       }
 
-      const list: Teacher[] = res.data?.data?.teachers?.data ?? [];
+      const rawList: any[] = res.data?.data?.teachers?.data ?? [];
+      const list: Teacher[] = rawList.map((teacher) => ({
+        teacherId: teacher?.id,
+        firstName: teacher?.employee?.firstName ?? "",
+        lastName: teacher?.employee?.lastName ?? "",
+        gender: teacher?.gender,
+        dateOfBirth: teacher?.dateOfBirth,
+        mobileNumber: teacher?.employee?.mobileNumber,
+        address: teacher?.employee?.address,
+        qualification: teacher?.qualification,
+        experience: teacher?.experience,
+        joiningDate: teacher?.employee?.joiningDate,
+        salary: teacher?.employee?.salary,
+        status: teacher?.employee?.status,
+      }));
+      console.log("list::::>",list)
       setTeachers(list);
     } catch (err: any) {
       console.error(err);
@@ -131,14 +145,6 @@ export default function StudentsPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-gray-900">Teachers Directory</h1>
-        <button
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
-          onClick={() => {
-            router.push("/teachers/new");
-          }}
-        >
-          <Plus className="w-4 h-4" /> Add Teacher
-        </button>
       </div>
 
       {/* Filters & Search Bar */}
@@ -211,19 +217,18 @@ export default function StudentsPage() {
               <th className="py-4 px-6">joiningDate</th>
               <th className="py-4 px-6">Contact No</th>
               <th className="py-4 px-6">Status</th>
-              <th className="py-4 px-6 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {loading ? (
               <tr>
-                <td colSpan={5} className="py-6 px-6 text-center text-gray-500">
+                <td colSpan={4} className="py-6 px-6 text-center text-gray-500">
                   Loading teachers...
                 </td>
               </tr>
             ) : paginatedTeachers.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-6 px-6 text-center text-gray-500">
+                <td colSpan={4} className="py-6 px-6 text-center text-gray-500">
                   No teachers found.
                 </td>
               </tr>
@@ -281,18 +286,6 @@ export default function StudentsPage() {
                       >
                         {teacher.status ?? "Unknown"}
                       </span>
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      <button
-                        className="text-indigo-600 hover:text-indigo-900 font-medium text-sm"
-                        onClick={() =>
-                          router.push(
-                            `/teachers/${teacher.teacherId}`
-                          )
-                        }
-                      >
-                        Edit
-                      </button>
                     </td>
                   </tr>
                 );

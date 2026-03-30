@@ -71,12 +71,13 @@ export default function NewTeacherPage() {
                 const response = await axiosClient.post("", {
                     query: CREATE_TEACHER_MUTATION,
                     variables: {
-                        ...values,
-                        userId: 1,
-                        experience: Number(values.experience),
-                        salary: Number(values.salary),
-                        dateOfBirth: new Date(values.dateOfBirth).toISOString(),
-                        joiningDate: new Date(values.joiningDate).toISOString(),
+                        data: {
+                            ...values,
+                            experience: Number(values.experience),
+                            salary: Number(values.salary),
+                            dateOfBirth: new Date(values.dateOfBirth).toISOString(),
+                            joiningDate: new Date(values.joiningDate).toISOString(),
+                        },
                     },
                 });
 
