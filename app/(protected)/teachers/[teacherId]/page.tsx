@@ -77,23 +77,23 @@ export default function EditTeacherPage() {
         }
 
         setInitialValues({
-          firstName: teacher.firstName ?? "",
-          lastName: teacher.lastName ?? "",
+          firstName: teacher.employee?.firstName ?? "",
+          lastName: teacher.employee?.lastName ?? "",
           gender: teacher.gender ?? "",
-          mobileNumber: teacher.mobileNumber ?? "",
-          address: teacher.address ?? "",
+          mobileNumber: teacher.employee?.mobileNumber ?? "",
+          address: teacher.employee?.address ?? "",
           qualification: teacher.qualification ?? "",
           experience: teacher.experience ?? 0,
-          joiningDate: teacher.joiningDate
-            ? new Date(Number(teacher.joiningDate)).toISOString().split("T")[0]
+          joiningDate: teacher.employee?.joiningDate
+            ? new Date(teacher.employee.joiningDate).toISOString().split("T")[0]
             : "",
 
           dateOfBirth: teacher.dateOfBirth
-            ? new Date(Number(teacher.dateOfBirth)).toISOString().split("T")[0]
+            ? new Date(teacher.dateOfBirth).toISOString().split("T")[0]
             : "",
 
-          salary: teacher.salary ?? 0.0,
-          status: teacher.status ?? "Active",
+          salary: teacher.employee?.salary ?? 0.0,
+          status: teacher.employee?.status ?? "Active",
         });
       } catch (err: any) {
         console.error(err);

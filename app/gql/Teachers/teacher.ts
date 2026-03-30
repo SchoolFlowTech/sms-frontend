@@ -1,49 +1,25 @@
 // graphql/mutations/createTeacher.js
 
 export const CREATE_TEACHER_MUTATION = `
-  mutation createTeacher(
-    $userId: Int
-    $firstName: String!
-    $lastName: String!
-    $gender: String!
-    $dateOfBirth: String!
-    $mobileNumber: String!
-    $address: String!
-    $qualification: String!
-    $experience: Int!
-    $joiningDate: String!
-    $salary: Float!
-    $status: String!
-  ) {
-    createTeacher(
-      userId: $userId
-      firstName: $firstName
-      lastName: $lastName
-      gender: $gender
-      dateOfBirth: $dateOfBirth
-      mobileNumber: $mobileNumber
-      address: $address
-      qualification: $qualification
-      experience: $experience
-      joiningDate: $joiningDate
-      salary: $salary
-      status: $status
-    ) {
+  mutation createTeacher($data: CreateTeacherInput!) {
+    createTeacher(data: $data) {
       status
       message
       data {
-        teacherId
-        firstName
-        lastName
-        gender
-        dateOfBirth
-        mobileNumber
-        address
+        id
+        employee {
+          firstName
+          lastName
+          mobileNumber
+          address
+          joiningDate
+          salary
+          status
+        }
         qualification
         experience
-        joiningDate
-        salary
-        status
+        gender
+        dateOfBirth
       }
     }
   }
@@ -55,18 +31,20 @@ export const GET_TEACHER_QUERY = `
       status
       message
       data {
-        teacherId
-        firstName
-        lastName
-        gender
-        dateOfBirth
-        mobileNumber
-        address
+        id
+        employee {
+          firstName
+          lastName
+          mobileNumber
+          address
+          joiningDate
+          salary
+          status
+        }
         qualification
         experience
-        joiningDate
-        salary
-        status
+        gender
+        dateOfBirth
       }
     }
   }
