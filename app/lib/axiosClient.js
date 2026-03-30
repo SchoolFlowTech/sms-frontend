@@ -1,7 +1,10 @@
 import axios from "axios";
 
+const graphqlBaseUrl =
+  process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:4000/graphql";
+
 const axiosClient = axios.create({
-  baseURL: "http://localhost:4000/graphql",
+  baseURL: graphqlBaseUrl,
   withCredentials: true,
 });
 
