@@ -1,5 +1,16 @@
 "use client"
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+
+// import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+
+import dynamic from "next/dynamic";
+
+const AreaChart = dynamic(() => import("recharts").then(mod => mod.AreaChart), { ssr: false });
+const Area = dynamic(() => import("recharts").then(mod => mod.Area), { ssr: false });
+const XAxis = dynamic(() => import("recharts").then(mod => mod.XAxis), { ssr: false });
+const YAxis = dynamic(() => import("recharts").then(mod => mod.YAxis), { ssr: false });
+const Tooltip = dynamic(() => import("recharts").then(mod => mod.Tooltip), { ssr: false });
+const ResponsiveContainer = dynamic(() => import("recharts").then(mod => mod.ResponsiveContainer), { ssr: false });
+
 import { ArrowUpRight, GraduationCap, DollarSign, Calendar, Users, Zap } from "lucide-react";
 const KleonStatCard = ({ title, value, icon: Icon, trend, color, accentColor }: any) => (
   <div className="flex-1 bg-white p-6 rounded-3xl shadow-sm flex flex-col justify-center relative overflow-hidden border border-gray-100">
