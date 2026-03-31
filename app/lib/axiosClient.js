@@ -1,10 +1,18 @@
 import axios from "axios";
 
-const graphqlURL =
-  process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:4000/graphql";
+// const graphqlURL =
+//   process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:4000/graphql";
+
+// ✅ Detect environment
+const isLocal = window.location.hostname === "localhost";
+
+// ✅ SWITCH automatically
+const BASE_URL = isLocal
+  ? "http://localhost:4000" // 🖥️ LOCAL BACKEND
+  : "https://sms-backend-indol.vercel.app"; // 🌐 PRODUCTION BACKEND
 
 const axiosClient = axios.create({
-  baseURL: graphqlURL,
+  baseURL: `${BASE_URL}/graphql`,
   withCredentials: true,
 });
 
