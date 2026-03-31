@@ -1,4 +1,5 @@
 "use client";
+import { redirect } from "next/navigation";
 // Ensure recharts is installed: npm install recharts
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { ArrowUpRight, GraduationCap, DollarSign, Calendar, Users, Zap } from "lucide-react";
@@ -31,8 +32,14 @@ const KleonStatCard = ({ title, value, icon: Icon, trend, color, accentColor }: 
   </div>
 );
 
-export default function Dashboard() {
-  return (
-   <></>
-  );
+// export default function Dashboard() {
+//   return (
+//    <></>
+//   );
+// }
+
+
+export default function Home() {
+  redirect("/login");
 }
+
