@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import { redirect } from "next/navigation";
 // Ensure recharts is installed: npm install recharts
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
