@@ -13,7 +13,7 @@ import axios from "axios";
 //   ? "http://localhost:4000" // 🖥️ LOCAL BACKEND
 //   : "https://sms-backend-indol.vercel.app"; // 🌐 PRODUCTION BACKEND
 
-const BASE_URL = "https://sms-backend-indol.vercel.app" || "http://localhost:4000";
+const BASE_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL;
 
 const axiosClient = axios.create({
   baseURL: `${BASE_URL}/graphql`,
