@@ -11,7 +11,7 @@ import { CREATE_EMPLOYEE_MUTATION } from "../../../gql/Employee/employee";
 const EmployeeType = {
     TEACHER: "TEACHER",
     ACCOUNTANT: "ACCOUNTANT",
-    ADMIN_STAFF: "ADMIN_STAFF",
+    ADMIN_STAFF: "ADMIN",
     PRINCIPAL: "PRINCIPAL",
     LIBRARIAN: "LIBRARIAN",
     SUPPORT_STAFF: "SUPPORT_STAFF"
@@ -402,7 +402,6 @@ export default function NewEmployeePage() {
                             value={values.type}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            defaultValue="Admin Staff"
                             className="mt-1 w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >
                             <option value={EmployeeType.ADMIN_STAFF}>Admin Staff</option>
