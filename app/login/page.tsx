@@ -9,11 +9,11 @@ export default function AuthPage() {
   const [isLoginView, setIsLoginView] = useState(true);
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#EEF1FF] via-[#F5F7FF] to-[#FDFBFF] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#EEF1FF] via-[#F5F7FF] to-[#FDFBFF] px-4">
       {/* Outer wrapper to control max width */}
-      <div className="w-full max-w-5xl h-[calc(100vh-80px)] flex items-center">
+      <div className="w-full max-w-5xl min-h-[calc(100vh-80px)] flex items-center">
         {/* Glassmorphism card */}
-        <div className="rounded-[32px] bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_24px_80px_rgba(15,23,42,0.18)] overflow-hidden grid grid-cols-1 lg:grid-cols-2 w-full h-full">
+        <div className="rounded-[32px] bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_24px_80px_rgba(15,23,42,0.18)] overflow-hidden grid grid-cols-1 lg:grid-cols-2 w-full h-auto min-h-full">
           
           {/* LEFT: Image + overlay stats */}
           <div className="relative hidden lg:block h-full">
@@ -58,7 +58,7 @@ export default function AuthPage() {
           </div>
 
           {/* RIGHT: Auth content */}
-          <div className="p-3 lg:p-5 flex flex-col ">
+          <div className="p-3 lg:p-5 flex flex-col overflow-y-auto ">
             {/* Brand on mobile */}
             <div className="mb-6 flex items-center justify-between lg:hidden">
               <div className="flex items-center gap-3">
